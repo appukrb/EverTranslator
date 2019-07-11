@@ -19,10 +19,15 @@ class SelectionGestureAdapter(view: View, val callback: OnGesture) {
             return@OnTouchListener true
         } else if (event.action == MotionEvent.ACTION_UP) {
             if (isOneFinger) {
-                endPlaceForOne?.also { endPlace ->
-                    firstPlaceForOne?.also { firstPlace ->
+                val endPlace = endPlaceForOne
+                val firstPlace = firstPlaceForOne
+                if (firstPlace != null) {
+                    if (endPlace != null) {
                         logger.debug("onAreaCreationFinish()")
                         callback.onAreaCreationFinish(firstPlace, endPlace)
+                    } else {
+                        logger.debug("onOneFingerTap()")
+                        callback.onOneFingerTap(firstPlace)
                     }
                 }
             } else if (isTwoFingers) {
@@ -186,6 +191,7 @@ class SelectionGestureAdapter(view: View, val callback: OnGesture) {
 }
 
 interface OnGesture {
+    fun onOneFingerTap(point: Point)
     fun onAreaCreationStart(startPoint: Point)
     fun onAreaCreationDragging(endPoint: Point)
     fun onAreaCreationFinish(startPoint: Point, endPoint: Point)
